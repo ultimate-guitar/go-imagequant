@@ -24,10 +24,11 @@ Usage of gopngquant:
 ```
 
 ## BUILDING
-Build via go build.  
+go-imagequant uses system version of libimagequant. Unfortunately libimagequant dont have official precompiled packages for any OS.  
+You can build your package. [](example package for Alpine linux)  
+Binding builds via go build.  
 This is a CGO package and requires a C compiler installed. However, if you use go install then future invocations of go build do not require the C compiler to be present.
 
-The imagequant.go file also declares a number of CFLAGS for GCC that allow the included libimagequant (2.8 git-a425e83) to build in an optimal way without using the upstream configure/make scripts.
 
 ## LICENSE
 I am releasing this binding under the ISC license, however, libimagequant itself is released under GPLv3-or-later and/or commercial licenses. You must comply with the terms of such a license when using this binding in a Go project.
