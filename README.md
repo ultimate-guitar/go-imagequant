@@ -19,13 +19,15 @@ Usage of gopngquant:
   -Out string
         Output filename
   -Speed int
-        Speed (1 slowest, 10 fastest) (default 3)
+        Speed (1 slowest, 10 fastest) (default: 3)
+  -Compression int
+        Compression level (DefaultCompression = 0, NoCompression = -1, BestSpeed = -2, BestCompression = -3) (default: BestCompression )
   -Version
 ```
 
 ## BUILDING
 go-imagequant uses system version of libimagequant. Unfortunately libimagequant dont have official precompiled packages for any OS.  
-You can build your package. [](example package for Alpine linux)  
+You can build your package. [https://github.com/larrabee/reImage/blob/master/alpine/libimagequant/APKBUILD](example package for Alpine linux)  
 Binding builds via go build.  
 This is a CGO package and requires a C compiler installed. However, if you use go install then future invocations of go build do not require the C compiler to be present.
 

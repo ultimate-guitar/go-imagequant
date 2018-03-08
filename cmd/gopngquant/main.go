@@ -19,117 +19,38 @@ package main
 import (
 	"flag"
 	"fmt"
-	"image"
-	"image/color"
-	"image/png"
 	"os"
-
-	"code.ivysaur.me/imagequant"
+	imagequant "github.com/larrabee/go-imagequant"
+	"image/png"
+	"io/ioutil"
 )
 
-func GoImageToRgba32(im image.Image) []byte {
-	w := im.Bounds().Max.X
-	h := im.Bounds().Max.Y
-	ret := make([]byte, w*h*4)
 
-	p := 0
+func crushFile(sourcefile, destfile string, speed int, compression png.CompressionLevel) error {
 
-	for y := 0; y < h; y += 1 {
-		for x := 0; x < w; x += 1 {
-			r16, g16, b16, a16 := im.At(x, y).RGBA() // Each value ranges within [0, 0xffff]
-
-			ret[p+0] = uint8(r16 >> 8)
-			ret[p+1] = uint8(g16 >> 8)
-			ret[p+2] = uint8(b16 >> 8)
-			ret[p+3] = uint8(a16 >> 8)
-			p += 4
-		}
-	}
-
-	return ret
-}
-
-func Rgb8PaletteToGoImage(w, h int, rgb8data []byte, pal color.Palette) image.Image {
-	rect := image.Rectangle{
-		Max: image.Point{
-			X: w,
-			Y: h,
-		},
-	}
-
-	ret := image.NewPaletted(rect, pal)
-
-	for y := 0; y < h; y += 1 {
-		for x := 0; x < w; x += 1 {
-			ret.SetColorIndex(x, y, rgb8data[y*w+x])
-		}
-	}
-
-	return ret
-}
-
-func Crush(sourcefile, destfile string, speed int) error {
-
-	fh, err := os.OpenFile(sourcefile, os.O_RDONLY, 0444)
+	sourceFh, err := os.OpenFile(sourcefile, os.O_RDONLY, 0444)
 	if err != nil {
 		return fmt.Errorf("os.OpenFile: %s", err.Error())
 	}
-	defer fh.Close()
+	defer sourceFh.Close()
 
-	img, err := png.Decode(fh)
+	image, err := ioutil.ReadAll(sourceFh)
 	if err != nil {
-		return fmt.Errorf("png.Decode: %s", err.Error())
+		return fmt.Errorf("ioutil.ReadAll: %s", err.Error())
 	}
 
-	width := img.Bounds().Max.X
-	height := img.Bounds().Max.Y
-
-	attr, err := imagequant.NewAttributes()
+	optiImage, err := imagequant.Crush(image, speed, compression)
 	if err != nil {
-		return fmt.Errorf("NewAttributes: %s", err.Error())
-	}
-	defer attr.Release()
-
-	err = attr.SetSpeed(speed)
-	if err != nil {
-		return fmt.Errorf("SetSpeed: %s", err.Error())
+		return fmt.Errorf("imagequant.Crush: %s", err.Error())
 	}
 
-	rgba32data := GoImageToRgba32(img)
-
-	iqm, err := imagequant.NewImage(attr, string(rgba32data), width, height, 0)
-	if err != nil {
-		return fmt.Errorf("NewImage: %s", err.Error())
-	}
-	defer iqm.Release()
-
-	res, err := iqm.Quantize(attr)
-	if err != nil {
-		return fmt.Errorf("Quantize: %s", err.Error())
-	}
-	defer res.Release()
-
-	rgb8data, err := res.WriteRemappedImage()
-	if err != nil {
-		return fmt.Errorf("WriteRemappedImage: %s", err.Error())
-	}
-
-	im2 := Rgb8PaletteToGoImage(res.GetImageWidth(), res.GetImageHeight(), rgb8data, res.GetPalette())
-
-	fh2, err := os.OpenFile(destfile, os.O_WRONLY|os.O_CREATE, 0644)
+	destFh, err := os.OpenFile(destfile, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return fmt.Errorf("os.OpenFile: %s", err.Error())
 	}
-	defer fh2.Close()
+	defer destFh.Close()
 
-	penc := png.Encoder{
-		CompressionLevel: png.BestCompression,
-	}
-	err = penc.Encode(fh2, im2)
-	if err != nil {
-		return fmt.Errorf("png.Encode: %s", err.Error())
-	}
-
+	destFh.Write(optiImage)
 	return nil
 }
 
@@ -138,15 +59,27 @@ func main() {
 	Infile := flag.String("In", "", "Input filename")
 	Outfile := flag.String("Out", "", "Output filename")
 	Speed := flag.Int("Speed", 3, "Speed (1 slowest, 10 fastest)")
+	Compression := flag.Int("Compression", -3, "Compression level (DefaultCompression = 0, NoCompression = -1, BestSpeed = -2, BestCompression = -3)")
 
 	flag.Parse()
 
 	if *ShouldDisplayVersion {
 		fmt.Printf("libimagequant '%s' (%d)\n", imagequant.GetLibraryVersionString(), imagequant.GetLibraryVersion())
-		os.Exit(1)
+		os.Exit(0)
 	}
 
-	err := Crush(*Infile, *Outfile, *Speed)
+	var cLevel png.CompressionLevel
+	switch *Compression {
+	case 0: cLevel = png.DefaultCompression
+	case -1: cLevel = png.NoCompression
+	case -2: cLevel = png.BestSpeed
+	case -3: cLevel = png.BestCompression
+	default:
+		cLevel = png.BestCompression
+	}
+
+
+	err := crushFile(*Infile, *Outfile, *Speed, cLevel)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
