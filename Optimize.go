@@ -9,15 +9,15 @@ import (
 	"bytes"
 )
 
-func GoImageToRgba32(im image.Image) []byte {
+func ImageToRgba32(im image.Image) (ret []byte) {
 	w := im.Bounds().Max.X
 	h := im.Bounds().Max.Y
-	ret := make([]byte, w*h*4)
+	ret = make([]byte, w*h*4)
 
 	p := 0
 
-	for y := 0; y < h; y += 1 {
-		for x := 0; x < w; x += 1 {
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
 			r16, g16, b16, a16 := im.At(x, y).RGBA() // Each value ranges within [0, 0xffff]
 
 			ret[p+0] = uint8(r16 >> 8)
@@ -27,7 +27,6 @@ func GoImageToRgba32(im image.Image) []byte {
 			p += 4
 		}
 	}
-
 	return ret
 }
 
@@ -41,17 +40,15 @@ func Rgb8PaletteToGoImage(w, h int, rgb8data []byte, pal color.Palette) image.Im
 
 	ret := image.NewPaletted(rect, pal)
 
-	for y := 0; y < h; y += 1 {
-		for x := 0; x < w; x += 1 {
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
 			ret.SetColorIndex(x, y, rgb8data[y*w+x])
 		}
 	}
-
 	return ret
 }
 
-func Crush(image []byte, speed int, compression png.CompressionLevel) ([]byte, error) {
-
+func Crush(image []byte, speed int, compression png.CompressionLevel) (out []byte, err error) {
 	reader := bytes.NewReader(image)
 	img, err := png.Decode(reader)
 	if err != nil {
@@ -72,9 +69,9 @@ func Crush(image []byte, speed int, compression png.CompressionLevel) ([]byte, e
 		return nil, fmt.Errorf("SetSpeed: %s", err.Error())
 	}
 
-	rgba32data := GoImageToRgba32(img)
+	rgba32data := string(ImageToRgba32(img))
 
-	iqm, err := NewImage(attr, string(rgba32data), width, height, 0)
+	iqm, err := NewImage(attr, rgba32data, width, height, 0)
 	if err != nil {
 		return nil, fmt.Errorf("NewImage: %s", err.Error())
 	}
@@ -93,17 +90,14 @@ func Crush(image []byte, speed int, compression png.CompressionLevel) ([]byte, e
 
 	im2 := Rgb8PaletteToGoImage(res.GetImageWidth(), res.GetImageHeight(), rgb8data, res.GetPalette())
 
-	var out []byte
 	writer := bytes.NewBuffer(out)
-
-	encoder := png.Encoder{
-		CompressionLevel: compression,
-	}
+	encoder := &png.Encoder{CompressionLevel: compression}
 
 	err = encoder.Encode(writer, im2)
 	if err != nil {
 		return nil, fmt.Errorf("png.Encode: %s", err.Error())
 	}
+	out = writer.Bytes()
 
-	return writer.Bytes(), nil
+	return out, nil
 }
