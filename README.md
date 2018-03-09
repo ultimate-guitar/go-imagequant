@@ -1,11 +1,13 @@
 ## ABOUT
-Go bindings for libimagequant
+Go bindings for libimagequant.
 
-libimagequant is a library for lossy recompression of PNG images to reduce their filesize. It is used by the pngquant tool. This  go-imagequant project is a set of bindings for libimagequant to enable its use from the Go programming language.
+Libimagequant is the backend of pngquant app. It provides a high level of png image compression.
+
+Libimagequant is a library for lossy recompression of PNG images to reduce their filesize.  This go-imagequant project is a set of bindings for libimagequant to enable its use from the Go programming language.
 
 This binding was written by hand. The result is somewhat more idiomatic than an automated conversion, but some  defer foo.Release() calls are required for memory management.
 
-This project forked from [https://code.ivysaur.me/go-imagequant/]() repo.
+This project forked from [https://code.ivysaur.me/go-imagequant/](https://code.ivysaur.me/go-imagequant/) repo.
 
 ## USAGE
 Usage example is provided by a sample utility cmd/gopngquant which mimics some functionality of the upstream pngquant.
@@ -26,10 +28,14 @@ Usage of gopngquant:
 ```
 
 ## BUILDING
-go-imagequant uses system version of libimagequant. Unfortunately libimagequant dont have official precompiled packages for any OS.  
-You can build your package. [https://github.com/larrabee/reImage/blob/master/alpine/libimagequant/APKBUILD](example package for Alpine linux)  
+go-imagequant uses system version of libimagequant.
+You can see more information about libimagequant building on [libimagequant project page](https://github.com/ImageOptim/libimagequant)
+
+Unfortunately libimagequant dont have official precompiled packages for any OS.
+You can build your package. [Example package for Alpine Linux](https://github.com/larrabee/reImage/blob/master/alpine/libimagequant/APKBUILD)
+
 Binding builds via go build.  
-This is a CGO package and requires a C compiler installed. However, if you use go install then future invocations of go build do not require the C compiler to be present.
+This is a CGO package and its requires a C compiler installed. However, if you use go install then future invocations of go build do not require the C compiler to be present.
 
 
 ## LICENSE
