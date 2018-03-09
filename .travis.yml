@@ -21,7 +21,7 @@ install:
   - cd /tmp
   - git clone "https://github.com/ImageOptim/libimagequant.git" && cd "libimagequant/"
   - ./configure --prefix=/usr
-  - make
+  - make libimagequant.so
   - sudo make install
 
 script:
