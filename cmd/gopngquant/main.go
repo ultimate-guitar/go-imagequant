@@ -19,12 +19,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	imagequant "github.com/larrabee/go-imagequant"
 	"image/png"
 	"io/ioutil"
+	"os"
 )
-
 
 func crushFile(sourcefile, destfile string, speed int, compression png.CompressionLevel) error {
 
@@ -70,14 +69,17 @@ func main() {
 
 	var cLevel png.CompressionLevel
 	switch *Compression {
-	case 0: cLevel = png.DefaultCompression
-	case -1: cLevel = png.NoCompression
-	case -2: cLevel = png.BestSpeed
-	case -3: cLevel = png.BestCompression
+	case 0:
+		cLevel = png.DefaultCompression
+	case -1:
+		cLevel = png.NoCompression
+	case -2:
+		cLevel = png.BestSpeed
+	case -3:
+		cLevel = png.BestCompression
 	default:
 		cLevel = png.BestCompression
 	}
-
 
 	err := crushFile(*Infile, *Outfile, *Speed, cLevel)
 	if err != nil {

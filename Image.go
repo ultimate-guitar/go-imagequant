@@ -29,33 +29,32 @@ import (
 import "C"
 
 type Image struct {
-	p           *C.struct_liq_image
-	dataPointer unsafe.Pointer
-	w, h        int
-	released    bool
+	p        *C.struct_liq_image
+	w, h     int
+	released bool
 }
 
 // Callers MUST call Release() on the returned object to free memory.
 func NewImage(attr *Attributes, rgba32data string, width, height int, gamma float64) (*Image, error) {
-	data := unsafe.Pointer(C.CString(rgba32data))
-	pImg := C.liq_image_create_rgba(attr.p, data, C.int(width), C.int(height), C.double(gamma))
+	dataP := unsafe.Pointer(C.CString(rgba32data))
+	defer C.free(dataP)
+
+	pImg := C.liq_image_create_rgba(attr.p, dataP, C.int(width), C.int(height), C.double(gamma))
 	if pImg == nil {
 		return nil, errors.New("Failed to create image (invalid argument)")
 	}
-
 	return &Image{
-		p:           pImg,
-		w:           width,
-		dataPointer: data,
-		h:           height,
-		released:    false,
+		p: pImg,
+		w: width,
+		//dataPointer: data,
+		h:        height,
+		released: false,
 	}, nil
 }
 
 // Free memory. Callers must not use this object after Release has been called.
 func (this *Image) Release() {
 	C.liq_image_destroy(this.p)
-	C.free(this.dataPointer)
 	this.released = true
 }
 

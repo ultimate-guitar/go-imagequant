@@ -1,12 +1,11 @@
 package imagequant
 
-
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"image/color"
 	"image/png"
-	"bytes"
 )
 
 func ImageToRgba32(im image.Image) (ret []byte) {
