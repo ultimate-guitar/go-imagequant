@@ -1,0 +1,28 @@
+go_import_path: github.com/larrabee/go-imagequant
+
+language: go
+go:
+  - 1.9.x
+  - tip
+
+os:
+  - linux
+dist: trusty
+sudo: required
+
+matrix:
+  allow_failures:
+    - go: tip
+
+gobuild_args: -v
+
+# Install libimagequant from sources
+install:
+  - cd /tmp
+  - git clone "https://github.com/ImageOptim/libimagequant.git" && cd "libimagequant/"
+  - ./configure --prefix=/usr
+  - make
+  - sudo make install
+
+script:
+  - go build ./...

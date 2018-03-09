@@ -1,5 +1,7 @@
+# Go-ImageQuant
+[![Go Report Card](https://goreportcard.com/badge/github.com/larrabee/go-imagequant)](https://goreportcard.com/report/github.com/larrabee/go-imagequant)
 ## ABOUT
-Go bindings for libimagequant.
+This is Go bindings for libimagequant.
 
 Libimagequant is the backend of pngquant app. It provides a high level of png image compression.
 

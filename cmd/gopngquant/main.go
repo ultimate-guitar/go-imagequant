@@ -19,7 +19,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	imagequant "github.com/larrabee/go-imagequant"
+	"github.com/larrabee/go-imagequant"
 	"image/png"
 	"io/ioutil"
 	"os"
