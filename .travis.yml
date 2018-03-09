@@ -25,4 +25,5 @@ install:
   - sudo make install
 
 script:
+  - cd "${TRAVIS_BUILD_DIR}"
   - go build ./...
