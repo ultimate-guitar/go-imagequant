@@ -40,6 +40,7 @@ func NewImage(attr *Attributes, rgba32data string, width, height int, gamma floa
 	dataP := unsafe.Pointer(C.CString(rgba32data))
 	pImg := C.liq_image_create_rgba(attr.p, dataP, C.int(width), C.int(height), C.double(gamma))
 	if pImg == nil {
+		C.free(dataP)
 		return nil, errors.New("Failed to create image (invalid argument)")
 	}
 	return &Image{
