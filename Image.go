@@ -35,6 +35,10 @@ type Image struct {
 	released bool
 }
 
+// Creates an object that represents the image pixels to be used for quantization and remapping.
+// The first argument is attributes object from NewAttributes(). The same attr object should be used for the entire process, from creation of images to quantization.
+// The rgba32data string must be contiguous run of RGBA pixels (alpha is the last component, 0 = transparent, 255 = opaque).
+// The Image.dataP that contain CString of rgba32data must not be modified or freed until this object is freed with Image.Release().
 // Callers MUST call Release() on the returned object to free memory.
 func NewImage(attr *Attributes, rgba32data string, width, height int, gamma float64) (*Image, error) {
 	dataP := unsafe.Pointer(C.CString(rgba32data))
@@ -59,6 +63,7 @@ func (this *Image) Release() {
 	this.released = true
 }
 
+// Performs quantization (palette generation) based on settings in attr and pixels of the image.
 func (this *Image) Quantize(attr *Attributes) (*Result, error) {
 	res := Result{
 		im: this,

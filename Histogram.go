@@ -26,10 +26,14 @@ type Histogram struct {
 	p *C.struct_liq_histogram
 }
 
+// "Learns" colors from the image, which will be later used to generate the palette.
+// After the image is added to the histogram it may be freed to save memory (but it's more efficient to keep the image object if it's going to be used for remapping).
+// Fixed colors added to the image are also added to the histogram.
 func (this *Histogram) AddImage(attr *Attributes, img *Image) error {
 	return translateError(C.liq_histogram_add_image(this.p, attr.p, img.p))
 }
 
+// Quantize generate palette from the histogram.
 func (this *Histogram) Quantize(attr *Attributes) (*Result, error) {
 	res := Result{}
 	liqerr := C.liq_histogram_quantize(this.p, attr.p, &res.p)

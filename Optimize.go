@@ -8,6 +8,7 @@ import (
 	"image/png"
 )
 
+// ImageToRgba32 gets the image struct and return []byte where each pixel encoded to 4 byte (R+G+B+A)
 func ImageToRgba32(im image.Image) (ret []byte) {
 	w := im.Bounds().Max.X
 	h := im.Bounds().Max.Y
@@ -47,6 +48,8 @@ func Rgb8PaletteToGoImage(w, h int, rgb8data []byte, pal color.Palette) image.Im
 	return ret
 }
 
+// Crush gets PNG image as []byte, speed int (from 1 to 10, 1 is slowest) and return optimized PNG image as []byte and error.
+// In most cases you should use this function for image optimization.
 func Crush(image []byte, speed int, compression png.CompressionLevel) (out []byte, err error) {
 	reader := bytes.NewReader(image)
 	img, err := png.Decode(reader)
