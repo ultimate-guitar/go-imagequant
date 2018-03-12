@@ -34,7 +34,7 @@ go-imagequant uses system version of libimagequant.
 You can see more information about libimagequant building on [libimagequant project page](https://github.com/ImageOptim/libimagequant)
 
 Unfortunately libimagequant dont have official precompiled packages for any OS.
-You can build your package. [Example package for Alpine Linux](https://github.com/larrabee/reImage/blob/master/alpine/libimagequant/APKBUILD)
+You can build your package. [Example package for Alpine Linux](https://github.com/ultimate-guitar/reImage/blob/master/alpine/libimagequant/APKBUILD)
 
 Binding builds via go build.  
 This is a CGO package and its requires a C compiler installed. However, if you use go install then future invocations of go build do not require the C compiler to be present.
