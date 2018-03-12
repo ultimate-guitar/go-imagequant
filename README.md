@@ -1,5 +1,5 @@
 # Go-ImageQuant
-[![Go Report Card](https://goreportcard.com/badge/github.com/larrabee/go-imagequant)](https://goreportcard.com/report/github.com/larrabee/go-imagequant) [![Build Status](https://travis-ci.org/larrabee/go-imagequant.svg?branch=master)](https://travis-ci.org/larrabee/go-imagequant)
+[![Go Report Card](https://goreportcard.com/badge/github.com/larrabee/go-imagequant)](https://goreportcard.com/report/github.com/larrabee/go-imagequant) [![Build Status](https://travis-ci.org/larrabee/go-imagequant.svg?branch=master)](https://travis-ci.org/larrabee/go-imagequant) [![GoDoc](https://godoc.org/github.com/ultimate-guitar/go-imagequant?status.svg)](https://godoc.org/github.com/ultimate-guitar/go-imagequant)
 ## ABOUT
 This is Go bindings for libimagequant.
 
