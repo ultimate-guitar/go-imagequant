@@ -1,3 +1,7 @@
+#### 2018-03-10 2.11.10.2
+* Small fixes
+* Add documentation
+
 #### 2018-03-10 2.11.10.1
 * Fix data race error created by prev commit
 
