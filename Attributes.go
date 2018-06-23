@@ -21,7 +21,7 @@ import (
 )
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/libimagequant
+#cgo CFLAGS: -I${SRCDIR}/libimagequant -std=c99
 #cgo LDFLAGS: -lm
 #include "blur.c"
 #include "kmeans.c"

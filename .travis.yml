@@ -1,4 +1,4 @@
-go_import_path: github.com/larrabee/go-imagequant
+go_import_path: github.com/ultimate-guitar/go-imagequant
 
 language: go
 go:
@@ -8,17 +8,13 @@ go:
 os:
   - linux
 dist: trusty
-sudo: required
+sudo: false
 
 matrix:
   allow_failures:
     - go: tip
 
 gobuild_args: -v
-
-# Install libimagequant from sources
-install:
-  - sudo apt-get install build-essential
 
 script:
   - cd "${TRAVIS_BUILD_DIR}"
