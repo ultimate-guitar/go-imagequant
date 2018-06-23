@@ -21,7 +21,6 @@ import (
 )
 
 /*
-#cgo pkg-config: imagequant
 #include "libimagequant.h"
 
 const char* liqVersionString() {
