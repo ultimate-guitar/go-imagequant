@@ -22,7 +22,6 @@ import (
 )
 
 /*
-#cgo pkg-config: imagequant
 #include "libimagequant.h"
 #include "stdlib.h"
 */
