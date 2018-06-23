@@ -18,11 +18,7 @@ gobuild_args: -v
 
 # Install libimagequant from sources
 install:
-  - cd /tmp
-  - git clone "https://github.com/ImageOptim/libimagequant.git" && cd "libimagequant/"
-  - ./configure --prefix=/usr
-  - make libimagequant.so
-  - sudo make install
+  - sudo apt-get install build-essential
 
 script:
   - cd "${TRAVIS_BUILD_DIR}"
