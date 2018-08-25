@@ -31,6 +31,7 @@ import "C"
 type Result struct {
 	p  *C.struct_liq_result
 	im *Image
+	released bool
 }
 
 // Enables/disables dithering in liq_write_remapped_image(). Dithering level must be between 0 and 1 (inclusive).
@@ -124,7 +125,16 @@ func (this *Result) GetPalette() color.Palette {
 	return ret
 }
 
-// Free memory. Callers must not use this object after Release has been called.
+// Saved for backward capability. You should not call it.
 func (this *Result) Release() {
-	C.liq_result_destroy(this.p)
+	return
+}
+
+
+func (this *Result) release() {
+	if !this.released{
+		C.liq_result_destroy(this.p)
+		this.released = true
+	}
+
 }

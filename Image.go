@@ -19,6 +19,7 @@ package imagequant
 import (
 	"errors"
 	"unsafe"
+	"runtime"
 )
 
 /*
@@ -46,20 +47,29 @@ func NewImage(attr *Attributes, rgba32data string, width, height int, gamma floa
 		C.free(dataP)
 		return nil, errors.New("Failed to create image (invalid argument)")
 	}
-	return &Image{
+	img := &Image{
 		p:        pImg,
 		w:        width,
 		dataP:    dataP,
 		h:        height,
 		released: false,
-	}, nil
+	}
+
+	runtime.SetFinalizer(img, img.release)
+	return img, nil
 }
 
-// Free memory. Callers must not use this object after Release has been called.
+// Saved for backward capability. You should not call it.
 func (this *Image) Release() {
-	C.liq_image_destroy(this.p)
-	C.free(this.dataP)
-	this.released = true
+	return
+}
+
+func (this *Image) release() {
+	if !this.released{
+		C.liq_image_destroy(this.p)
+		C.free(this.dataP)
+		this.released = true
+	}
 }
 
 // Performs quantization (palette generation) based on settings in attr and pixels of the image.
@@ -67,6 +77,7 @@ func (this *Image) Quantize(attr *Attributes) (*Result, error) {
 	res := Result{
 		im: this,
 	}
+	runtime.SetFinalizer(res, res.release)
 	liqerr := C.liq_image_quantize(this.p, attr.p, &res.p)
 	if liqerr != C.LIQ_OK {
 		return nil, translateError(liqerr)

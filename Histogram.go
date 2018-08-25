@@ -20,9 +20,11 @@ package imagequant
 #include "libimagequant.h"
 */
 import "C"
+import "runtime"
 
 type Histogram struct {
 	p *C.struct_liq_histogram
+	released bool
 }
 
 // "Learns" colors from the image, which will be later used to generate the palette.
@@ -35,6 +37,7 @@ func (this *Histogram) AddImage(attr *Attributes, img *Image) error {
 // Quantize generate palette from the histogram.
 func (this *Histogram) Quantize(attr *Attributes) (*Result, error) {
 	res := Result{}
+	runtime.SetFinalizer(res, res.release)
 	liqerr := C.liq_histogram_quantize(this.p, attr.p, &res.p)
 	if liqerr != C.LIQ_OK {
 		return nil, translateError(liqerr)
@@ -43,7 +46,14 @@ func (this *Histogram) Quantize(attr *Attributes) (*Result, error) {
 	return &res, nil
 }
 
-// Free memory. Callers must not use this object after Release has been called.
+// Saved for backward capability. You should not call it.
 func (this *Histogram) Release() {
-	C.liq_histogram_destroy(this.p)
+	return
+}
+
+func (this *Histogram) release() {
+	if !this.released {
+		C.liq_histogram_destroy(this.p)
+		this.released = true
+	}
 }

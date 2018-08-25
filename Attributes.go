@@ -18,6 +18,7 @@ package imagequant
 
 import (
 	"errors"
+	"runtime"
 )
 
 /*
@@ -36,6 +37,7 @@ import "C"
 
 type Attributes struct {
 	p *C.struct_liq_attr
+	released bool
 }
 
 // Returns object that will hold initial settings (attributes) for the library.
@@ -45,8 +47,9 @@ func NewAttributes() (*Attributes, error) {
 	if pAttr == nil { // nullptr
 		return nil, errors.New("Unsupported platform")
 	}
-
-	return &Attributes{p: pAttr}, nil
+	atr := &Attributes{p: pAttr}
+	runtime.SetFinalizer(atr, atr.release)
+	return atr, nil
 }
 
 const (
@@ -136,13 +139,22 @@ func (this *Attributes) SetLastIndexTransparent(is_last int) {
 }
 
 // Creates histogram object that will be used to collect color statistics from multiple images.
-// It must be freed using Histogram.Release()
 func (this *Attributes) CreateHistogram() *Histogram {
 	ptr := C.liq_histogram_create(this.p)
-	return &Histogram{p: ptr}
+	histogram := &Histogram{p: ptr}
+	runtime.SetFinalizer(histogram, histogram.release)
+	return histogram
 }
 
-// Free memory. Callers must not use this object after Release has been called.
+
+func (this *Attributes) release() {
+	if !this.released {
+		C.liq_attr_destroy(this.p)
+		this.released = true
+	}
+}
+
+// Saved for backward capability. You should not call it.
 func (this *Attributes) Release() {
-	C.liq_attr_destroy(this.p)
+	return
 }
