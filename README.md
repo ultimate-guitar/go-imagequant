@@ -7,7 +7,7 @@ Libimagequant is the backend of pngquant app. It provides a high level of png im
 
 Libimagequant is a library for lossy recompression of PNG images to reduce their filesize.  This go-imagequant project is a set of bindings for libimagequant to enable its use from the Go programming language.
 
-This binding was written by hand. The result is somewhat more idiomatic than an automated conversion, but some  defer foo.Release() calls are required for memory management.
+This binding was written by hand. The result is somewhat more idiomatic than an automated conversion.
 
 This project forked from [https://code.ivysaur.me/go-imagequant/](https://code.ivysaur.me/go-imagequant/) repo.
 

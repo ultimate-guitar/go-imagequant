@@ -64,7 +64,6 @@ func Crush(image []byte, speed int, compression png.CompressionLevel) (out []byt
 	if err != nil {
 		return nil, fmt.Errorf("NewAttributes: %s", err.Error())
 	}
-	defer attr.Release()
 
 	err = attr.SetSpeed(speed)
 	if err != nil {
@@ -77,13 +76,11 @@ func Crush(image []byte, speed int, compression png.CompressionLevel) (out []byt
 	if err != nil {
 		return nil, fmt.Errorf("NewImage: %s", err.Error())
 	}
-	defer iqm.Release()
 
 	res, err := iqm.Quantize(attr)
 	if err != nil {
 		return nil, fmt.Errorf("Quantize: %s", err.Error())
 	}
-	defer res.Release()
 
 	rgb8data, err := res.WriteRemappedImage()
 	if err != nil {
