@@ -1,4 +1,9 @@
-#### 2018-03-10 2.11.10.2
+#### 2018-06-23 2.12.1.0
+* Bump libimagequant version
+* Add lib building with go get
+* Disable sudo for travis builds
+
+#### 2018-03-18 2.11.10.2
 * Small fixes
 * Add documentation
 
