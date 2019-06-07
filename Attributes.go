@@ -21,8 +21,8 @@ import (
 )
 
 /*
-#cgo CFLAGS: -O3 -fopenmp -fomit-frame-pointer -Wall -Wno-attributes -std=c99 -DNDEBUG -DUSE_SSE=1 -msse
-#cgo LDFLAGS: -lm -fopenmp -ldl
+#cgo CFLAGS: -std=c99
+#cgo LDFLAGS: -lm
 #include "libimagequant.h"
 */
 import "C"
