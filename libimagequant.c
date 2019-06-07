@@ -337,8 +337,7 @@ LIQ_EXPORT LIQ_NONNULL liq_error liq_set_speed(liq_attr* attr, int speed)
     if (!CHECK_STRUCT_TYPE(attr, liq_attr)) return LIQ_INVALID_POINTER;
     if (speed < 1 || speed > 10) return LIQ_VALUE_OUT_OF_RANGE;
 
-    unsigned int iterations = MAX(8-speed, 0);
-    iterations += iterations * iterations/2;
+    unsigned int iterations = MAX(8-speed, 0); iterations += iterations * iterations/2;
     attr->kmeans_iterations = iterations;
     attr->kmeans_iteration_limit = 1.0/(double)(1<<(23-speed));
     attr->feedback_loop_trials = MAX(56-9*speed, 0);
@@ -353,9 +352,7 @@ LIQ_EXPORT LIQ_NONNULL liq_error liq_set_speed(liq_attr* attr, int speed)
     attr->speed = speed;
 
     attr->progress_stage1 = attr->use_contrast_maps ? 20 : 8;
-    if (attr->feedback_loop_trials < 2) {
-        attr->progress_stage1 += 30;
-    }
+    if (attr->feedback_loop_trials < 2) attr->progress_stage1 += 30;
     attr->progress_stage3 = 50 / (1+speed);
     attr->progress_stage2 = 100 - attr->progress_stage1 - attr->progress_stage3;
     return LIQ_OK;
@@ -1276,13 +1273,8 @@ LIQ_NONNULL static float remap_to_palette(liq_image *const input_image, unsigned
     LIQ_ARRAY(kmeans_state, average_color, (KMEANS_CACHE_LINE_GAP+map->colors) * max_threads);
     kmeans_init(map, max_threads, average_color);
 
-#if __GNUC__ >= 9
-    #pragma omp parallel for if (rows*cols > 3000) \
-        schedule(static) default(none) shared(acolormap,average_color,cols,input_image,map,n,output_pixels,rows,transparent_index) reduction(+:remapping_error)
-#else
     #pragma omp parallel for if (rows*cols > 3000) \
         schedule(static) default(none) shared(acolormap) shared(average_color) reduction(+:remapping_error)
-#endif
     for(int row = 0; row < rows; ++row) {
         const f_pixel *const row_pixels = liq_image_get_row_f(input_image, row);
         const f_pixel *const bg_pixels = input_image->background && acolormap[transparent_index].acolor.a < 1.f/256.f ? liq_image_get_row_f(input_image->background, row) : NULL;
@@ -1340,14 +1332,14 @@ inline static f_pixel get_dithered_pixel(const float dither_level, const float m
      } else if (dither_error < 2.f/256.f/256.f) {
         // don't dither areas that don't have noticeable error — makes file smaller
         return px;
-    }
+     }
 
-    return (f_pixel) {
-        .r=px.r + sr * ratio,
-        .g=px.g + sg * ratio,
-        .b=px.b + sb * ratio,
-        .a=a,
-    };
+     return (f_pixel){
+         .r=px.r + sr * ratio,
+         .g=px.g + sg * ratio,
+         .b=px.b + sb * ratio,
+         .a=a,
+     };
 }
 
 /**
@@ -1592,15 +1584,13 @@ LIQ_EXPORT LIQ_NONNULL liq_error liq_histogram_add_image(liq_histogram *input_hi
         }
     }
 
-    /*
-     ** Step 2: attempt to make a histogram of the colors, unclustered.
-     ** If at first we don't succeed, increase ignorebits to increase color
-     ** coherence and try again.
-     */
+   /*
+    ** Step 2: attempt to make a histogram of the colors, unclustered.
+    ** If at first we don't succeed, increase ignorebits to increase color
+    ** coherence and try again.
+    */
 
-    if (liq_progress(options, options->progress_stage1 * 0.4f)) {
-        return LIQ_ABORTED;
-    }
+    if (liq_progress(options, options->progress_stage1 * 0.4f)) return LIQ_ABORTED;
 
     const bool all_rows_at_once = liq_image_can_use_rgba_rows(input_image);
 
@@ -1892,7 +1882,7 @@ static colormap *find_best_palette(histogram *hist, const liq_attr *options, con
         colormap *newmap;
         if (hist->size && fixed_colors_count < max_colors) {
             newmap = mediancut(hist, max_colors-fixed_colors_count, target_mse * target_mse_overshoot, MAX(MAX(45.0/65536.0, target_mse), least_error)*1.2,
-                               options->malloc, options->free);
+            options->malloc, options->free);
         } else {
             feedback_loop_trials = 0;
             newmap = NULL;
