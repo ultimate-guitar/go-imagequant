@@ -21,15 +21,8 @@ import (
 )
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/libimagequant -std=c99
+#cgo CFLAGS: -O3 -fomit-frame-pointer -Wall -Wno-attributes -std=c99 -DNDEBUG -DUSE_SSE=1 -msse
 #cgo LDFLAGS: -lm
-#include "blur.c"
-#include "kmeans.c"
-#include "libimagequant.c"
-#include "mediancut.c"
-#include "mempool.c"
-#include "nearest.c"
-#include "pam.c"
 #include "libimagequant.h"
 */
 import "C"
