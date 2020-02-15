@@ -21,7 +21,7 @@ import (
 )
 
 /*
-#cgo CFLAGS: -O3 -fomit-frame-pointer -Wall -Wno-attributes -std=c99 -DNDEBUG -DUSE_SSE=1 -msse
+#cgo CFLAGS: -O3 -fomit-frame-pointer -Wall -Wno-attributes -Wno-unknown-pragmas -std=c99 -DNDEBUG -DUSE_SSE=1 -msse
 #cgo LDFLAGS: -lm
 #include "libimagequant.h"
 */
