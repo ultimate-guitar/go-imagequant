@@ -1,3 +1,6 @@
+#### 2020-12-16 2.13.1.0
+* Bump libimagequant version
+
 #### 2018-06-23 2.12.1.0
 * Bump libimagequant version
 * Add lib building with go get

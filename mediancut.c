@@ -195,7 +195,7 @@ static double prepare_sort(struct box *b, hist_item achv[])
 
     const unsigned int ind1 = b->ind;
     const unsigned int colors = b->colors;
-#if __GNUC__ >= 9
+#if __GNUC__ >= 9 || __clang__
     #pragma omp parallel for if (colors > 25000) \
         schedule(static) default(none) shared(achv, channels, colors, ind1)
 #else
@@ -316,9 +316,7 @@ static void box_init(struct box *box, const hist_item *achv, const unsigned int 
     box->total_error = -1;
 
     box->color = averagepixels(colors, &achv[ind]);
-    #pragma omp task if (colors > 5000)
     box->variance = box_variance(achv, box);
-    #pragma omp task if (colors > 8000)
     box->max_error = box_max_error(achv, box);
 }
 
@@ -336,17 +334,12 @@ LIQ_PRIVATE colormap *mediancut(histogram *hist, unsigned int newcolors, const d
     /*
      ** Set up the initial box.
      */
-    #pragma omp parallel
-    #pragma omp single
     {
         double sum = 0;
         for(unsigned int i=0; i < hist->size; i++) {
             sum += achv[i].adjusted_weight;
         }
-        #pragma omp taskgroup
-        {
-            box_init(&bv[0], achv, 0, hist->size, sum);
-        }
+        box_init(&bv[0], achv, 0, hist->size, sum);
 
 
         /*
@@ -391,11 +384,8 @@ LIQ_PRIVATE colormap *mediancut(histogram *hist, unsigned int newcolors, const d
             double lowersum = 0;
             for(unsigned int i=0; i < break_at; i++) lowersum += achv[indx + i].adjusted_weight;
 
-            #pragma omp taskgroup
-            {
-                box_init(&bv[bi], achv, indx, break_at, lowersum);
-                box_init(&bv[boxes], achv, indx + break_at, clrs - break_at, sm - lowersum);
-            }
+            box_init(&bv[bi], achv, indx, break_at, lowersum);
+            box_init(&bv[boxes], achv, indx + break_at, clrs - break_at, sm - lowersum);
 
             ++boxes;
 
